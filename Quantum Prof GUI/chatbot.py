@@ -1,17 +1,17 @@
 import openai
 
-openai.api_key = "ENTER KEY HERE"
+openai.api_key = ""
 
 
 def bot(user_input, messages):
     messages.append({"role": "user", "content": user_input})
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
+    response = openai.chat.completions.create(
+        model="gpt-4o",
         messages=messages
     )
 
-    message = response.choices[0].message['content']
+    message = response.choices[0].message.content
     messages.append({"role": "assistant", "content": message})
     return message, messages
 
