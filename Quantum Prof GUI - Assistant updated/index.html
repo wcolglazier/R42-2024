@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Assistant</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: gray;
+        }
+        /* nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 20px;
+            display: inline-block;
+            font-size: 16px;
+        }
+        nav a:hover {
+            background-color: #575757;
+            border-radius: 4px;
+        } */
+        #chat-container {
+            width: 80%;
+            max-width: 1000px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            box-sizing: border-box;
+            border-color: black;
+            border: 3px solid;
+            border-radius: 8px;
+            
+        }
+        #messages {
+            height: 300px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-radius: 2%;
+            width: 95%;
+            padding: 12px 20px;
+            margin: 5px 0;
+            transition-duration: 0.2s;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        input{
+            border-radius: 2%;
+            width: 50%;
+            padding: 12px 20px;
+            margin: 5px 0;
+            transition-duration: 0.2s;
+            box-sizing: border-box;
+            border-color: black;
+            border: 3px solid;
+            border-radius: 8px;
+            font-size: 15px;
+
+        }
+        .message.user {
+            text-align: right;
+            font-weight: bold;
+            color: blue;
+        }
+        .message.assistant {
+            text-align: left;
+        }
+        button{
+            border-radius: 2%;
+            width: 15%;
+            background-color: transparent;
+            transition-duration: 0.1s;
+            font-size: 15px;
+            padding: 12px 20px;
+            border-radius: 8px;
+        }
+        button:hover{
+            background-color: rgb(93, 92, 92);
+            color: white;
+        }
+        button:active{
+            background-color: darkgray;
+            color: white
+        }
+
+    </style>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> -->
+</head>
+<body>
+    <!-- <nav>
+        <a href="/">Tuned Chatbot</a>
+        <a href="/untuned">Untuned Chatbot</a>
+    </nav> -->
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="user-items">
+            <input type="text" id="message-input" placeholder="Ask me about Quantum Computing" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value;
+            if (message.trim() === '') return;
+
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML += `<div class="message user">You: ${message}</div>`;
+            messageInput.value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'message': message,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                messagesContainer.innerHTML += `<div class="message assistant">${data.response}</div>`;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>

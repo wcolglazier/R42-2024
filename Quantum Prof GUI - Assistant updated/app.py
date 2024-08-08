@@ -10,12 +10,24 @@ from pygments.formatters import HtmlFormatter
 app = Flask(__name__)
 
 # Initialize the OpenAI client
-client = OpenAI(api_key="ENTER_API_KEY HERE")
+client = OpenAI(api_key="")
+
+assistant_id_tuned = "" #Quintus
+#assistant_id_untuned = "" #Professor Quint
 
 thread = client.beta.threads.create()
 
+#assistant = client.beta.assistants.update(
+#  assistant_id=assistant_id_tuned,
+#  tools=[{"type": "code_interpreter"}],
+#   tool_resources={"file_search": {"vector_store_ids": ["vs_n5Se4w1INuTEDT6pGHTsFzVF"]}},
+#)
+
+assistant = client.beta.assistants.retrieve(assistant_id_tuned)
+#print(assistant)
+
 # Function to handle communication with OpenAI
-def bot(user_input, assistant_id):
+def bot(user_input):
     thread_message = client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
@@ -24,7 +36,7 @@ def bot(user_input, assistant_id):
 
     run = client.beta.threads.runs.create(
         thread_id=thread.id,
-        assistant_id=assistant_id,
+        assistant_id=assistant.id,
         model="gpt-4o",
     )
 
@@ -72,22 +84,30 @@ def bot(user_input, assistant_id):
 # Initial messages (corrected to start as an empty list)
 # messages = []
 
-assistant_id_tuned = "ENTER_KEY_HERE" #Quintus
-assistant_id_untuned = "ENTER_HERE" #Professor Quint
+
 
 # Home route to render the HTML page
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# @app.route('/untuned')
+# def untuned():
+#     return render_template('untuned.html')
+
 # API route to handle user input and get response from assistant
 @app.route('/chat', methods=['POST'])
 def chat():
     user_input = request.form['message']
-    response = bot(user_input, assistant_id_tuned)
+    response = bot(user_input)
     return jsonify({'response': response})
+
+
+# @app.route('/chat_untuned', methods=['POST'])
+# def chat_untuned():
+#     user_input = request.form['message']
+#     response = bot(user_input, assistant_id_untuned)
+#     return jsonify({'response': response})
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
